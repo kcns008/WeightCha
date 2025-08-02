@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeightCha Demo - Next-Generation Human Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .demo-section {
+            margin-bottom: 3rem;
+        }
+
+        .demo-section h2 {
+            color: #4f46e5;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .weightcha-section {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .weightcha-section.active {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .weightcha-prompt {
+            color: #4f46e5;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .pressure-area {
+            width: 200px;
+            height: 100px;
+            margin: 1rem auto;
+            background: linear-gradient(45deg, #4f46e5, #7c3aed);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .pressure-area:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .verification-status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .verification-status.show {
+            opacity: 1;
+        }
+
+        .verification-status.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .verification-status.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .submit-btn.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .submit-btn:hover.enabled {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .info-card h3 {
+            color: #4f46e5;
+            margin-bottom: 1rem;
+        }
+
+        .info-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #24292e;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .github-link:hover {
+            background: #2f363d;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .demo-card {
+                padding: 2rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 WeightCha Demo</h1>
+            <p>Experience next-generation human verification using trackpad pressure detection. No more clicking traffic lights!</p>
+        </div>
+
+        <div class="demo-card">
+            <div class="demo-section">
+                <h2>🏕️ Contact Orillia Camping Resort</h2>
+                <p>Try our contact form protected by WeightCha - just fill out the form and apply gentle pressure to your trackpad to verify you're human.</p>
+            </div>
+
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="checkin">Check-in Date</label>
+                    <input type="date" id="checkin" name="checkin">
+                </div>
+
+                <div class="form-group">
+                    <label for="guests">Number of Guests</label>
+                    <input type="number" id="guests" name="guests" min="1" max="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" placeholder="Tell us about your camping needs, special requests, or any questions you have..." required></textarea>
+                </div>
+
+                <div class="weightcha-section" id="weightchaSection">
+                    <div class="weightcha-prompt">
+                        🤖 Human Verification Required
+                    </div>
+                    <div class="pressure-area" id="pressureArea">
+                        Apply Gentle Pressure
+                    </div>
+                    <div class="verification-status" id="verificationStatus"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Send Message
+                </button>
+            </form>
+        </div>
+
+        <div class="demo-card">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>🔒 Privacy First</h3>
+                    <p>WeightCha doesn't store biometric data. It only analyzes pressure patterns in real-time and discards the data immediately.</p>
+                </div>
+                <div class="info-card">
+                    <h3>⚡ Fast & Seamless</h3>
+                    <p>Verification happens in milliseconds without interrupting the user experience. No more solving puzzles or clicking images.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🎯 Highly Accurate</h3>
+                    <p>Advanced pattern recognition detects subtle human micro-variations that are nearly impossible for bots to replicate.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🌐 Easy Integration</h3>
+                    <p>One-line npm install and you're ready to go. Works with React, Vue, Angular, or vanilla JavaScript.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="https://github.com/kcns008/WeightCha" class="github-link" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WeightCha Demo Simulation
+        let isVerified = false;
+        let pressureData = [];
+        let startTime = null;
+
+        const pressureArea = document.getElementById('pressureArea');
+        const verificationStatus = document.getElementById('verificationStatus');
+        const submitBtn = document.getElementById('submitBtn');
+        const weightchaSection = document.getElementById('weightchaSection');
+        const contactForm = document.getElementById('contactForm');
+
+        // Simulate pressure detection
+        let isTracking = false;
+        let pressureInterval = null;
+
+        pressureArea.addEventListener('mousedown', startPressureTracking);
+        pressureArea.addEventListener('mouseup', stopPressureTracking);
+        pressureArea.addEventListener('mouseleave', stopPressureTracking);
+
+        // Touch events for mobile
+        pressureArea.addEventListener('touchstart', startPressureTracking);
+        pressureArea.addEventListener('touchend', stopPressureTracking);
+
+        function startPressureTracking(e) {
+            e.preventDefault();
+            if (isVerified) return;
+
+            isTracking = true;
+            startTime = Date.now();
+            pressureData = [];
+            
+            pressureArea.textContent = 'Keep Pressing...';
+            pressureArea.style.background = 'linear-gradient(45deg, #10b981, #059669)';
+            weightchaSection.classList.add('active');
+
+            // Simulate pressure readings
+            pressureInterval = setInterval(() => {
+                if (isTracking) {
+                    // Simulate natural human pressure variations
+                    const basePressure = 0.5 + Math.random() * 0.3;
+                    const microVariation = (Math.random() - 0.5) * 0.1;
+                    const pressure = Math.max(0, Math.min(1, basePressure + microVariation));
+                    
+                    pressureData.push({
+                        pressure: pressure,
+                        timestamp: Date.now() - startTime
+                    });
+
+                    // Check if we have enough data
+                    if (pressureData.length >= 20) {
+                        verifyHuman();
+                    }
+                }
+            }, 50);
+        }
+
+        function stopPressureTracking() {
+            if (!isTracking) return;
+            
+            isTracking = false;
+            clearInterval(pressureInterval);
+            
+            if (pressureData.length < 10) {
+                pressureArea.textContent = 'Hold Longer';
+                pressureArea.style.background = 'linear-gradient(45deg, #ef4444, #dc2626)';
+                setTimeout(() => {
+                    if (!isVerified) {
+                        pressureArea.textContent = 'Apply Gentle Pressure';
+                        pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
+                        weightchaSection.classList.remove('active');
+                    }
+                }, 1500);
+            }
+        }
+
+        function verifyHuman() {
+            clearInterval(pressureInterval);
+            isTracking = false;
+
+            // Simulate WeightCha analysis
+            const analysisResult = analyzeHumanPattern(pressureData);
+            
+            if (analysisResult.isHuman) {
+                isVerified = true;
+                pressureArea.textContent = '✅ Human Verified';
+                pressureArea.style.background = 'linear-gradient(45deg, #10b981, #059669)';
+                
+                verificationStatus.textContent = `Verification successful! Confidence: ${analysisResult.confidence}%`;
+                verificationStatus.className = 'verification-status success show';
+                
+                submitBtn.classList.add('enabled');
+                
+                // Store verification token (simulated)
+                sessionStorage.setItem('weightchaToken', 'demo_token_' + Date.now());
+            } else {
+                verificationStatus.textContent = 'Verification failed. Please try again.';
+                verificationStatus.className = 'verification-status error show';
+                
+                setTimeout(() => {
+                    pressureData = [];
+                    pressureArea.textContent = 'Apply Gentle Pressure';
+                    pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
+                    verificationStatus.classList.remove('show');
+                    weightchaSection.classList.remove('active');
+                }, 2000);
+            }
+        }
+
+        function analyzeHumanPattern(data) {
+            // Simplified human pattern analysis
+            if (data.length < 10) return { isHuman: false, confidence: 0 };
+
+            // Calculate pressure variance (humans have natural micro-variations)
+            const pressures = data.map(d => d.pressure);
+            const avgPressure = pressures.reduce((a, b) => a + b) / pressures.length;
+            const variance = pressures.reduce((acc, p) => acc + Math.pow(p - avgPressure, 2), 0) / pressures.length;
+            const stdDev = Math.sqrt(variance);
+            
+            // Calculate timing irregularity
+            const intervals = [];
+            for (let i = 1; i < data.length; i++) {
+                intervals.push(data[i].timestamp - data[i-1].timestamp);
+            }
+            const avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
+            const intervalVariance = intervals.reduce((acc, int) => acc + Math.pow(int - avgInterval, 2), 0) / intervals.length;
+            
+            // Human patterns have moderate variance and natural timing irregularity
+            const humanlikeVariance = stdDev > 0.02 && stdDev < 0.15;
+            const humanlikeTiming = intervalVariance > 100 && intervalVariance < 2000;
+            const sufficientDuration = data[data.length - 1].timestamp > 800;
+            
+            const isHuman = humanlikeVariance && humanlikeTiming && sufficientDuration;
+            const confidence = isHuman ? Math.floor(85 + Math.random() * 10) : Math.floor(Math.random() * 30);
+            
+            return { isHuman, confidence };
+        }
+
+        // Form submission
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!isVerified) {
+                alert('Please complete human verification first.');
+                return;
+            }
+
+            const formData = new FormData(contactForm);
+            const data = Object.fromEntries(formData.entries());
+            data.weightchaToken = sessionStorage.getItem('weightchaToken');
+
+            try {
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Message sent successfully! ${result.message}`);
+                    contactForm.reset();
+                    
+                    // Reset verification
+                    resetVerification();
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert('Failed to send message. Please try again.');
+            } finally {
+                submitBtn.textContent = 'Send Message';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function resetVerification() {
+            isVerified = false;
+            pressureArea.textContent = 'Apply Gentle Pressure';
+            pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
+            verificationStatus.classList.remove('show');
+            submitBtn.classList.remove('enabled');
+            weightchaSection.classList.remove('active');
+            sessionStorage.removeItem('weightchaToken');
+        }
+
+        // Prevent form submission without verification
+        submitBtn.addEventListener('click', (e) => {
+            if (!isVerified) {
+                e.preventDefault();
+                alert('Please complete human verification first.');
+            }
+        });
+    </script>
+</body>
+</html>

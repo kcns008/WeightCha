@@ -1,0 +1,12 @@
+{
+  "name": "weightcha-demo-api",
+  "version": "1.0.0",
+  "description": "WeightCha Demo API for Vercel",
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "joi": "^17.11.0"
+  }
+}
