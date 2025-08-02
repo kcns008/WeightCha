@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeightCha Debug - Trackpad Testing</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f7;
+        }
+        
+        .debug-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .success { background: #d1fae5; border: 2px solid #10b981; }
+        .error { background: #fee2e2; border: 2px solid #ef4444; }
+        .warning { background: #fef3c7; border: 2px solid #f59e0b; }
+        .info { background: #dbeafe; border: 2px solid #3b82f6; }
+        
+        .test-area {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+        }
+        
+        .test-area:hover {
+            border-color: #3b82f6;
+            background: #f1f5f9;
+        }
+        
+        .pressure-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 20px 0;
+        }
+        
+        .log {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .capabilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .capability {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .capability.available {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+        }
+        
+        .capability.unavailable {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+        
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔧 WeightCha Debug Tool</h1>
+        <p>This tool helps diagnose trackpad pressure detection issues.</p>
+        
+        <div id="browser-info" class="status info">
+            <strong>Browser:</strong> <span id="user-agent"></span><br>
+            <strong>Platform:</strong> <span id="platform"></span><br>
+            <strong>Touch Support:</strong> <span id="touch-support"></span>
+        </div>
+        
+        <h2>🌐 Browser Capabilities</h2>
+        <div id="capabilities" class="capabilities"></div>
+        
+        <div id="device-info" class="status info">
+            <strong>Device Detection:</strong> <span id="device-status">Checking...</span>
+        </div>
+        
+        <h2>🧪 Pressure Testing</h2>
+        <div class="test-area" id="test-area">
+            <div class="pressure-display" id="pressure-display">0g</div>
+            <div id="instructions">Place your finger on this area and apply pressure</div>
+            <div id="method-info"></div>
+        </div>
+        
+        <div class="status" id="test-status">
+            <strong>Status:</strong> <span id="status-text">Ready for testing</span>
+        </div>
+        
+        <div>
+            <button onclick="testWebHID()">Test WebHID</button>
+            <button onclick="testForceTouch()">Test Force Touch</button>
+            <button onclick="testPointerEvents()">Test Pointer Events</button>
+            <button onclick="testMotionSensors()">Test Motion Sensors</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <h2>📝 Debug Log</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        let pressureData = [];
+        let currentMethod = 'none';
+        let isRecording = false;
+        
+        // Logging function
+        function log(message, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('log');
+            const logEntry = `[${timestamp}] ${message}${data ? ': ' + JSON.stringify(data, null, 2) : ''}`;
+            logElement.textContent += logEntry + '\n';
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message, data);
+        }
+        
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const statusElement = document.getElementById('test-status');
+            const statusText = document.getElementById('status-text');
+            statusText.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+        
+        function updatePressure(pressure) {
+            document.getElementById('pressure-display').textContent = `${pressure.toFixed(1)}g`;
+        }
+        
+        // Browser detection
+        function detectBrowser() {
+            const ua = navigator.userAgent;
+            document.getElementById('user-agent').textContent = ua;
+            document.getElementById('platform').textContent = navigator.platform;
+            document.getElementById('touch-support').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+            
+            log('Browser detected', {
+                userAgent: ua,
+                platform: navigator.platform,
+                touchSupport: 'ontouchstart' in window
+            });
+        }
+        
+        // Capability detection
+        function detectCapabilities() {
+            try {
+                const capabilities = {
+                    webHID: 'hid' in navigator,
+                    forceTouch: 'webkitForce' in document.createElement('div'),
+                    pointerEvents: 'PointerEvent' in window && 'pressure' in PointerEvent.prototype,
+                    motionSensors: 'DeviceMotionEvent' in window,
+                    touchForce: 'ontouchforcechange' in document,
+                    requestFullscreen: 'requestFullscreen' in document.documentElement,
+                    vibrate: 'vibrate' in navigator
+                };
+                
+                const capabilitiesContainer = document.getElementById('capabilities');
+                capabilitiesContainer.innerHTML = '';
+                
+                Object.entries(capabilities).forEach(([name, available]) => {
+                    const capElement = document.createElement('div');
+                    capElement.className = `capability ${available ? 'available' : 'unavailable'}`;
+                    capElement.innerHTML = `
+                        <strong>${name}</strong><br>
+                        ${available ? '✅ Available' : '❌ Not Available'}
+                    `;
+                    capabilitiesContainer.appendChild(capElement);
+                });
+                
+                log('Capabilities detected', capabilities);
+                
+                // Auto-setup the best available method
+                if (capabilities.forceTouch && navigator.userAgent.includes('Safari')) {
+                    setTimeout(() => testForceTouch(), 500);
+                } else if (capabilities.pointerEvents) {
+                    setTimeout(() => testPointerEvents(), 500);
+                } else {
+                    log('No advanced pressure detection available, using basic events');
+                }
+                
+                return capabilities;
+            } catch (error) {
+                log('Error detecting capabilities', error);
+                return {};
+            }
+        }
+        
+        // WebHID Testing
+        async function testWebHID() {
+            if (!('hid' in navigator)) {
+                updateStatus('WebHID not supported in this browser', 'error');
+                log('WebHID not supported');
+                return;
+            }
+            
+            try {
+                updateStatus('Requesting HID devices... (Click OK in permission dialog)', 'warning');
+                log('Requesting WebHID devices');
+                
+                const devices = await navigator.hid.requestDevice({
+                    filters: [
+                        { vendorId: 0x05ac }, // Apple
+                        { vendorId: 0x046d }, // Logitech
+                        { vendorId: 0x1532 }  // Razer
+                    ]
+                });
+                
+                if (devices.length === 0) {
+                    updateStatus('No HID devices selected', 'warning');
+                    log('No HID devices selected');
+                    return;
+                }
+                
+                const device = devices[0];
+                await device.open();
+                
+                updateStatus('HID device connected! Try moving/clicking.', 'success');
+                log('HID device connected', {
+                    productName: device.productName,
+                    vendorId: device.vendorId,
+                    productId: device.productId
+                });
+                
+                device.addEventListener('inputreport', (event) => {
+                    const { data, device, reportId } = event;
+                    const dataArray = new Uint8Array(data.buffer);
+                    log('HID input received', { reportId, data: Array.from(dataArray) });
+                });
+                
+                currentMethod = 'webHID';
+                document.getElementById('method-info').textContent = `Method: WebHID (${device.productName})`;
+                
+            } catch (error) {
+                updateStatus(`WebHID error: ${error.message}`, 'error');
+                log('WebHID error', error);
+            }
+        }
+        
+        // Force Touch Testing
+        function testForceTouch() {
+            try {
+                currentMethod = 'forceTouch';
+                document.getElementById('method-info').textContent = 'Method: Force Touch API';
+                updateStatus('Force Touch enabled. Press firmly on the test area.', 'success');
+                log('Force Touch method activated');
+                
+                const testArea = document.getElementById('test-area');
+                
+                // Clear existing listeners
+                testArea.replaceWith(testArea.cloneNode(true));
+                const newTestArea = document.getElementById('test-area');
+                
+                // Safari/WebKit Force Touch events
+                newTestArea.addEventListener('webkitmouseforcedown', (e) => {
+                    const force = e.webkitForce || 0;
+                    const pressure = force * 100; // Convert to grams approximation
+                    updatePressure(pressure);
+                    log('Force Touch pressure (mouseforcedown)', { force, pressure });
+                });
+                
+                newTestArea.addEventListener('webkitmouseforcecahnged', (e) => {
+                    const force = e.webkitForce || 0;
+                    const pressure = force * 100;
+                    updatePressure(pressure);
+                    log('Force Touch pressure (forcechanged)', { force, pressure });
+                });
+                
+                newTestArea.addEventListener('webkitmouseforceup', (e) => {
+                    updatePressure(0);
+                    log('Force Touch released');
+                });
+                
+                // Also try the touch force events
+                newTestArea.addEventListener('touchforcechange', (e) => {
+                    if (e.touches && e.touches[0] && e.touches[0].force) {
+                        const force = e.touches[0].force;
+                        const pressure = force * 100;
+                        updatePressure(pressure);
+                        log('Touch force change', { force, pressure });
+                    }
+                });
+                
+                // Fallback to regular mouse events with simulated pressure
+                newTestArea.addEventListener('mousedown', (e) => {
+                    log('Mouse down (Force Touch fallback)');
+                    updatePressure(75); // Simulate pressure
+                });
+                
+                newTestArea.addEventListener('mouseup', (e) => {
+                    updatePressure(0);
+                    log('Mouse up (Force Touch fallback)');
+                });
+                
+                log('Force Touch listeners added');
+                
+            } catch (error) {
+                updateStatus(`Force Touch error: ${error.message}`, 'error');
+                log('Force Touch error', error);
+            }
+        }
+        
+        // Pointer Events Testing
+        function testPointerEvents() {
+            if (!('PointerEvent' in window)) {
+                updateStatus('Pointer Events not supported', 'error');
+                log('Pointer Events not supported');
+                return;
+            }
+            
+            currentMethod = 'pointerEvents';
+            document.getElementById('method-info').textContent = 'Method: Pointer Events API';
+            updateStatus('Pointer Events enabled. Touch and press on the test area.', 'success');
+            log('Pointer Events method activated');
+            
+            const testArea = document.getElementById('test-area');
+            
+            testArea.addEventListener('pointerdown', (e) => {
+                const pressure = e.pressure || 0;
+                const simulated = pressure * 200; // Simulate grams
+                updatePressure(simulated);
+                log('Pointer pressure', { 
+                    pressure: e.pressure, 
+                    force: e.force,
+                    simulated,
+                    pointerType: e.pointerType 
+                });
+            });
+            
+            testArea.addEventListener('pointermove', (e) => {
+                if (e.buttons > 0) {
+                    const pressure = e.pressure || 0;
+                    const simulated = pressure * 200;
+                    updatePressure(simulated);
+                }
+            });
+            
+            testArea.addEventListener('pointerup', (e) => {
+                updatePressure(0);
+                log('Pointer released');
+            });
+        }
+        
+        // Motion Sensors Testing
+        function testMotionSensors() {
+            if (!('DeviceMotionEvent' in window)) {
+                updateStatus('Motion Sensors not supported', 'error');
+                log('Motion Sensors not supported');
+                return;
+            }
+            
+            currentMethod = 'motionSensors';
+            document.getElementById('method-info').textContent = 'Method: Motion Sensors';
+            updateStatus('Motion Sensors enabled. Tilt/shake device while touching.', 'success');
+            log('Motion Sensors method activated');
+            
+            window.addEventListener('devicemotion', (e) => {
+                if (e.acceleration) {
+                    const totalAccel = Math.sqrt(
+                        e.acceleration.x ** 2 + 
+                        e.acceleration.y ** 2 + 
+                        e.acceleration.z ** 2
+                    );
+                    
+                    if (totalAccel > 2) { // Threshold for significant motion
+                        const simulated = Math.min(totalAccel * 10, 100);
+                        updatePressure(simulated);
+                        log('Motion detected', { 
+                            acceleration: e.acceleration,
+                            total: totalAccel,
+                            simulated 
+                        });
+                    }
+                }
+            });
+        }
+        
+        // Initialize
+        function initDebug() {
+            try {
+                detectBrowser();
+                detectCapabilities();
+                
+                // Immediately show that we're working
+                document.getElementById('device-status').textContent = 'JavaScript loaded successfully!';
+                
+                // Basic touch events for all methods
+                const testArea = document.getElementById('test-area');
+                
+                testArea.addEventListener('touchstart', (e) => {
+                    log('Touch started', { touches: e.touches.length });
+                });
+                
+                testArea.addEventListener('touchend', (e) => {
+                    updatePressure(0);
+                    log('Touch ended');
+                });
+                
+                // Mouse events as fallback
+                testArea.addEventListener('mousedown', (e) => {
+                    log('Mouse down', { button: e.button });
+                    updatePressure(50); // Show some feedback
+                });
+                
+                testArea.addEventListener('mouseup', (e) => {
+                    updatePressure(0);
+                    log('Mouse up');
+                });
+                
+                log('Debug tool initialized successfully');
+                
+            } catch (error) {
+                log('Initialization error', error);
+                document.getElementById('device-status').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // Try multiple initialization methods
+        document.addEventListener('DOMContentLoaded', initDebug);
+        
+        // Fallback if DOMContentLoaded doesn't fire
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDebug);
+        } else {
+            initDebug();
+        }
+        
+        // Last resort - initialize after 1 second
+        setTimeout(initDebug, 1000);
+    </script>
+</body>
+</html>

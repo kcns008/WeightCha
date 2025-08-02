@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safari Force Touch Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .force-zone {
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 30px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .force-zone:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.02);
+        }
+        
+        .force-reading {
+            font-size: 5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .instructions {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 20px 0;
+        }
+        
+        .status {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+        
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+        
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid rgba(76, 175, 80, 0.6);
+        }
+        
+        .indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background: #f44336;
+            transition: all 0.3s ease;
+        }
+        
+        .indicator.active {
+            background: #4caf50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍎 Safari Force Touch Test</h1>
+        <p>Optimized for macOS Safari with Force Touch trackpads</p>
+        
+        <div class="status" id="status">
+            <span class="indicator" id="indicator"></span>
+            <span id="status-text">Ready - Place finger and press firmly</span>
+        </div>
+        
+        <div class="force-zone" id="force-zone">
+            <div class="force-reading" id="force-reading">0.0</div>
+            <div class="instructions">Apply Force Touch pressure here</div>
+        </div>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        let maxForce = 0;
+        let isPressed = false;
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateForce(force) {
+            const reading = document.getElementById('force-reading');
+            const indicator = document.getElementById('indicator');
+            const status = document.getElementById('status');
+            const statusText = document.getElementById('status-text');
+            
+            reading.textContent = force.toFixed(2);
+            
+            if (force > 0.1) {
+                indicator.classList.add('active');
+                status.classList.add('success');
+                statusText.textContent = `Force detected: ${force.toFixed(2)} (Max: ${maxForce.toFixed(2)})`;
+            } else {
+                indicator.classList.remove('active');
+                status.classList.remove('success');
+                statusText.textContent = 'Ready - Place finger and press firmly';
+            }
+            
+            if (force > maxForce) {
+                maxForce = force;
+            }
+        }
+        
+        function setupForceTouch() {
+            const forceZone = document.getElementById('force-zone');
+            
+            // Safari Force Touch events
+            const forceEvents = [
+                'webkitmouseforcedown',
+                'webkitmouseforceup', 
+                'webkitmouseforcechanged',
+                'touchforcechange'
+            ];
+            
+            forceEvents.forEach(eventName => {
+                forceZone.addEventListener(eventName, (e) => {
+                    const force = e.webkitForce || e.force || 0;
+                    updateForce(force);
+                    log(`${eventName}: ${force.toFixed(3)}`);
+                    e.preventDefault();
+                });
+            });
+            
+            // Mouse events for comparison
+            forceZone.addEventListener('mousedown', (e) => {
+                isPressed = true;
+                log(`Mouse down - checking for Force Touch...`);
+                
+                // Check if we get force data within 100ms
+                setTimeout(() => {
+                    if (isPressed && maxForce < 0.1) {
+                        log('No Force Touch detected - using mouse simulation');
+                        updateForce(0.5); // Simulate force
+                    }
+                }, 100);
+            });
+            
+            forceZone.addEventListener('mouseup', (e) => {
+                isPressed = false;
+                updateForce(0);
+                log('Mouse up');
+            });
+            
+            // Touch events
+            forceZone.addEventListener('touchstart', (e) => {
+                if (e.touches[0] && e.touches[0].force !== undefined) {
+                    const force = e.touches[0].force;
+                    updateForce(force);
+                    log(`Touch start - Force: ${force.toFixed(3)}`);
+                } else {
+                    log('Touch start - no force data');
+                }
+                e.preventDefault();
+            });
+            
+            forceZone.addEventListener('touchmove', (e) => {
+                if (e.touches[0] && e.touches[0].force !== undefined) {
+                    const force = e.touches[0].force;
+                    updateForce(force);
+                }
+                e.preventDefault();
+            });
+            
+            forceZone.addEventListener('touchend', (e) => {
+                updateForce(0);
+                log('Touch end');
+                e.preventDefault();
+            });
+            
+            log('Safari Force Touch test initialized');
+            log('Browser: ' + navigator.userAgent);
+            log('Force Touch support: ' + ('webkitForce' in document.createElement('div')));
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', setupForceTouch);
+        
+        // Fallback initialization
+        if (document.readyState !== 'loading') {
+            setupForceTouch();
+        }
+    </script>
+</body>
+</html>

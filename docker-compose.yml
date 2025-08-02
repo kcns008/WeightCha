@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # WeightCha Backend API
+  weightcha-api:
+    build:
+      context: ./backend-api
+      dockerfile: Dockerfile
+    container_name: weightcha-api
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8080
+      - LOG_LEVEL=debug
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://weightcha:password@postgres:5432/weightcha
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./backend-api/logs:/app/logs
+    networks:
+      - weightcha-network
+    restart: unless-stopped
+
+  # Demo Site Server
+  demo-site:
+    build:
+      context: ./demo
+      dockerfile: Dockerfile
+    container_name: weightcha-demo
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - WEIGHTCHA_API_URL=http://weightcha-api:3000/api
+      - WEIGHTCHA_ENABLED=true
+      - WEIGHTCHA_SECRET_KEY=demo-secret-key
+      - ALLOWED_ORIGINS=http://localhost:3000
+    depends_on:
+      - weightcha-api
+    networks:
+      - weightcha-network
+    restart: unless-stopped
+
+  # Redis for session storage and caching
+  redis:
+    image: redis:7-alpine
+    container_name: weightcha-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - weightcha-network
+    restart: unless-stopped
+
+  # PostgreSQL for data storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: weightcha-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=weightcha
+      - POSTGRES_USER=weightcha
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend-api/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - weightcha-network
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  weightcha-network:
+    driver: bridge

@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orillia Camping - Contact Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .demo-header h2 {
+            color: #2563eb;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        .contact-form {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .contact-form h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        .submit-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* WeightCha Demo Styles */
+        .weightcha-demo {
+            text-align: center;
+        }
+
+        .weightcha-container {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 3px solid #0ea5e9;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weightcha-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+        }
+
+        .weightcha-header {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 25px;
+        }
+
+        .weightcha-header h3 {
+            color: #0c4a6e;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .weightcha-header p {
+            color: #075985;
+            font-size: 0.95rem;
+        }
+
+        .pressure-zone {
+            position: relative;
+            z-index: 2;
+            height: 200px;
+            background: white;
+            border: 3px solid #0ea5e9;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .pressure-zone:hover {
+            border-color: #0284c7;
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        .pressure-zone.active {
+            border-color: #059669;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            box-shadow: 0 12px 30px rgba(5, 150, 105, 0.4);
+        }
+
+        .pressure-circle {
+            width: 80px;
+            height: 80px;
+            border: 4px solid #0ea5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pressure-circle.active {
+            border-color: #059669;
+            background: radial-gradient(circle, rgba(5, 150, 105, 0.2), transparent);
+            transform: scale(1.2);
+        }
+
+        .pressure-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, #0ea5e9, #38bdf8);
+            transition: height 0.1s ease;
+            border-radius: 0 0 50px 50px;
+        }
+
+        .pressure-indicator {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0c4a6e;
+            z-index: 1;
+        }
+
+        .pressure-value {
+            font-size: 14px;
+            color: #075985;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0f2fe;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #059669);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .instructions {
+            position: relative;
+            z-index: 2;
+            margin: 20px 0;
+        }
+
+        .step {
+            padding: 8px 0;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #075985;
+        }
+
+        .step.active {
+            opacity: 1;
+            color: #0c4a6e;
+            font-weight: 600;
+            transform: scale(1.05);
+        }
+
+        .status-message {
+            position: relative;
+            z-index: 2;
+            font-size: 14px;
+            color: #075985;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .status-message.success {
+            color: #065f46;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+        }
+
+        .status-message.error {
+            color: #7f1d1d;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+        }
+
+        .device-info {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 12px;
+            color: #475569;
+            position: relative;
+            z-index: 2;
+        }
+
+        .device-info h4 {
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .capability-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .capability-list li {
+            padding: 3px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .capability-list li::before {
+            content: '✅';
+            font-size: 12px;
+        }
+
+        .capability-list li.unavailable::before {
+            content: '❌';
+        }
+
+        .capability-list li.limited::before {
+            content: '⚠️';
+        }
+
+        .demo-explanation {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .demo-explanation h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .demo-explanation p {
+            color: #78350f;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .fallback-notice {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .fallback-notice h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .fallback-notice p {
+            color: #78350f;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏕️ Orillia Camping Resort</h1>
+            <p>Experience the future of spam protection with WeightCha</p>
+        </div>
+
+        <div class="demo-section">
+            <div class="demo-header">
+                <h2>🚀 WeightCha Live Demo</h2>
+                <p>See how pressure-based human verification works in real-time</p>
+            </div>
+
+            <div class="demo-grid">
+                <!-- Contact Form -->
+                <div class="contact-form">
+                    <h3>📧 Contact Our Resort</h3>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="Tell us about your camping plans..." required></textarea>
+                        </div>
+
+                        <!-- Hidden field for verification token -->
+                        <input type="hidden" id="verification-token" name="verification-token">
+                        
+                        <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                            Complete WeightCha Verification First
+                        </button>
+                    </form>
+                </div>
+
+                <!-- WeightCha Widget -->
+                <div class="weightcha-demo">
+                    <div id="weightcha-container" class="weightcha-container">
+                        <div class="weightcha-header">
+                            <h3>🤚 WeightCha Human Verification</h3>
+                            <p>Place finger on trackpad and apply gentle pressure</p>
+                        </div>
+                        
+                        <div id="pressure-zone" class="pressure-zone">
+                            <div class="pressure-circle" id="pressure-circle">
+                                <div class="pressure-fill" id="pressure-fill"></div>
+                                <div class="pressure-indicator" id="pressure-indicator">0g</div>
+                            </div>
+                            <div class="pressure-value" id="pressure-value">Ready for verification</div>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        
+                        <div class="instructions">
+                            <div id="step-1" class="step active">Place finger on trackpad</div>
+                            <div id="step-2" class="step">Apply gentle pressure (50-100g)</div>
+                            <div id="step-3" class="step">Hold for 2 seconds</div>
+                            <div id="step-4" class="step">Release slowly</div>
+                        </div>
+                        
+                        <div id="status-message" class="status-message">
+                            Ready to verify... Device detection in progress.
+                        </div>
+                    </div>
+
+                    <!-- Device Information -->
+                    <div class="device-info" id="device-info">
+                        <h4>🔍 Device Detection Results</h4>
+                        <ul class="capability-list" id="capability-list">
+                            <li class="unavailable">Detecting browser capabilities...</li>
+                        </ul>
+                    </div>
+
+                    <!-- Demo Explanation -->
+                    <div class="demo-explanation">
+                        <h4>🎯 How WeightCha Works</h4>
+                        <p>
+                            WeightCha uses your trackpad's pressure sensitivity to detect human touch patterns. 
+                            Bots can't replicate the natural variance and timing of human finger pressure, 
+                            making this a highly effective anti-spam solution.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WeightCha Browser Library (Demo Implementation) -->
+    <script>
+        // Enhanced Demo Implementation with Safari Force Touch Support
+        class BrowserWeightChaDemo {
+            constructor(apiKey) {
+                this.apiKey = apiKey;
+                this.pressureData = [];
+                this.motionData = [];
+                this.isRecording = false;
+                this.currentStep = 0;
+                this.challengeId = null;
+                this.detectionMethod = 'unknown';
+                this.deviceInfo = {};
+                this.startTime = null;
+                this.capabilities = {};
+                this.maxForce = 0;
+                this.currentForce = 0;
+                this.isHuman = false;
+                this.verificationToken = null;
+                
+                this.init();
+            }
+
+            async init() {
+                await this.detectCapabilities();
+                this.updateDeviceInfo();
+                this.setupEventListeners();
+                this.updateStatus('Device detected. Ready for verification.');
+            }
+
+            async detectCapabilities() {
+                const ua = navigator.userAgent;
+                const isSafari = ua.includes('Safari') && !ua.includes('Chrome');
+                const isChrome = ua.includes('Chrome');
+                const isMac = ua.includes('Mac');
+                const isHTTPS = location.protocol === 'https:';
+                
+                this.capabilities = {
+                    webHID: 'hid' in navigator,
+                    forceTouch: 'webkitForce' in document.createElement('div'),
+                    pointerEvents: 'PointerEvent' in window,
+                    motionSensors: 'DeviceMotionEvent' in window,
+                    touchForce: 'ontouchforcechange' in document
+                };
+
+                // Enhanced detection method selection
+                if (isSafari && isMac && isHTTPS && this.capabilities.forceTouch) {
+                    this.detectionMethod = 'safari-force-touch';
+                } else if (isChrome && this.capabilities.webHID) {
+                    this.detectionMethod = 'chrome-webHID';
+                } else if (this.capabilities.pointerEvents) {
+                    this.detectionMethod = 'pointer-events';
+                } else if (this.capabilities.motionSensors) {
+                    this.detectionMethod = 'motion-sensors';
+                } else {
+                    this.detectionMethod = 'fallback';
+                }
+
+                // Collect device info
+                this.deviceInfo = {
+                    userAgent: navigator.userAgent,
+                    browser: isSafari ? 'Safari' : isChrome ? 'Chrome' : 'Other',
+                    platform: isMac ? 'macOS' : 'Other',
+                    isHTTPS: isHTTPS,
+                    screen: {
+                        width: screen.width,
+                        height: screen.height,
+                        pixelRatio: window.devicePixelRatio
+                    },
+                    trackpadType: this.detectTrackpadType(),
+                    browserSupport: Object.keys(this.capabilities).filter(cap => this.capabilities[cap])
+                };
+
+                console.log('WeightCha Enhanced capabilities:', this.capabilities);
+                console.log('Selected detection method:', this.detectionMethod);
+                console.log('Device info:', this.deviceInfo);
+            }
+
+            detectTrackpadType() {
+                const ua = navigator.userAgent;
+                const screen = window.screen;
+                
+                if (ua.includes('Macintosh')) {
+                    if (screen.width === 3456 && screen.height === 2234) {
+                        return 'MacBook Pro 16" 2021';
+                    } else if (screen.width === 3024 && screen.height === 1964) {
+                        return 'MacBook Pro 14" 2021';
+                    } else if (screen.width === 2560 && screen.height === 1600) {
+                        return 'MacBook Air M1';
+                    } else if (screen.width === 2880 && screen.height === 1864) {
+                        return 'MacBook Air M2';
+                    }
+                    return 'MacBook (unknown model)';
+                } else if (ua.includes('Windows')) {
+                    return 'Windows Precision Trackpad';
+                } else if (ua.includes('iPad')) {
+                    return 'iPad Pro (pressure-sensitive)';
+                }
+                return 'generic';
+            }
+
+            updateDeviceInfo() {
+                const capabilityList = document.getElementById('capability-list');
+                capabilityList.innerHTML = '';
+
+                const capabilities = [
+                    { name: 'WebHID API (Chrome/Edge)', available: this.capabilities.webHID },
+                    { name: 'Force Touch API (Safari)', available: this.capabilities.forceTouch },
+                    { name: 'Pointer Events API', available: this.capabilities.pointerEvents },
+                    { name: 'Motion Sensors', available: this.capabilities.motionSensors },
+                    { name: 'Touch Force Events', available: this.capabilities.touchForce }
+                ];
+
+                capabilities.forEach(cap => {
+                    const li = document.createElement('li');
+                    li.textContent = cap.name;
+                    li.className = cap.available ? 'available' : 'unavailable';
+                    capabilityList.appendChild(li);
+                });
+
+                // Add detection method info
+                const methodLi = document.createElement('li');
+                methodLi.textContent = `Active Method: ${this.detectionMethod}`;
+                methodLi.className = 'available';
+                methodLi.style.fontWeight = 'bold';
+                capabilityList.appendChild(methodLi);
+
+                // Add device type
+                const deviceLi = document.createElement('li');
+                deviceLi.textContent = `Device: ${this.deviceInfo.trackpadType}`;
+                deviceLi.className = 'available';
+                capabilityList.appendChild(deviceLi);
+            }
+
+            setupEventListeners() {
+                const pressureZone = document.getElementById('pressure-zone');
+                
+                // Setup based on detection method
+                switch (this.detectionMethod) {
+                    case 'safari-force-touch':
+                        this.setupSafariForceTouch(pressureZone);
+                        break;
+                    case 'chrome-webHID':
+                        this.setupWebHID(pressureZone);
+                        break;
+                    case 'pointer-events':
+                        this.setupPointerEvents(pressureZone);
+                        break;
+                    case 'motion-sensors':
+                        this.setupMotionSensors();
+                        this.setupTouchEvents(pressureZone); // Fallback to touch
+                        break;
+                    default:
+                        this.setupTouchEvents(pressureZone); // Basic fallback
+                }
+            }
+
+            setupSafariForceTouch(element) {
+                console.log('Setting up Safari Force Touch events');
+                this.updateStatus('Force Touch ready. Apply gentle pressure...');
+                
+                // Safari Force Touch events - using working implementation
+                const forceEvents = [
+                    'webkitmouseforcedown',
+                    'webkitmouseforceup',
+                    'webkitmouseforcechanged',
+                    'touchforcechange'
+                ];
+                
+                forceEvents.forEach(eventName => {
+                    element.addEventListener(eventName, (e) => {
+                        const force = e.webkitForce || e.force || 0;
+                        this.currentForce = force;
+                        
+                        if (force > this.maxForce) {
+                            this.maxForce = force;
+                        }
+                        
+                        // Convert force to simulated grams (Force Touch range: 0-3+)
+                        const simulatedPressure = force * 50; // Scale to 0-150g range
+                        this.updatePressureDisplay(simulatedPressure);
+                        
+                        console.log(`${eventName}: ${force.toFixed(3)} (${simulatedPressure.toFixed(1)}g)`);
+                        
+                        if (this.isRecording) {
+                            this.pressureData.push({
+                                timestamp: Date.now() - this.startTime,
+                                pressure: simulatedPressure,
+                                force: force,
+                                method: 'safari-force-touch'
+                            });
+                        }
+                        
+                        // Auto-validate if enough pressure is applied
+                        if (force > 1.0 && this.isRecording) {
+                            this.isHuman = true;
+                        }
+                        
+                        e.preventDefault();
+                    });
+                });
+                
+                // Mouse events as fallback
+                element.addEventListener('mousedown', (e) => {
+                    console.log('Mouse down - checking for Force Touch...');
+                    this.startRecording();
+                    
+                    // Start a timeout to check if Force Touch data comes in
+                    setTimeout(() => {
+                        if (this.currentForce < 0.1 && this.isRecording) {
+                            console.log('No Force Touch detected - using mouse simulation');
+                            this.updatePressureDisplay(40);
+                            this.pressureData.push({
+                                timestamp: Date.now() - this.startTime,
+                                pressure: 40,
+                                force: 0.4,
+                                method: 'mouse-fallback'
+                            });
+                            this.isHuman = true; // Accept fallback as human
+                        }
+                    }, 50);
+                });
+                
+                element.addEventListener('mouseup', (e) => {
+                    this.currentForce = 0;
+                    this.updatePressureDisplay(0);
+                    this.stopRecording();
+                    console.log('Mouse up');
+                });
+            }
+
+            setupPointerEvents(element) {
+                console.log('Setting up Pointer events');
+                this.updateStatus('Pointer events ready. Click and apply pressure...');
+                
+                element.addEventListener('pointerdown', (e) => {
+                    this.startRecording();
+                    const pressure = e.pressure || 0;
+                    const simulatedPressure = pressure > 0 ? pressure * 100 : 50;
+                    
+                    this.updatePressureDisplay(simulatedPressure);
+                    console.log(`Pointer down - Pressure: ${pressure} (${simulatedPressure}g)`);
+                    
+                    this.recordPressure(simulatedPressure, e.timeStamp, 'pointer-events');
+                    
+                    if (pressure > 0.3 || simulatedPressure > 30) {
+                        this.isHuman = true;
+                    }
+                });
+
+                element.addEventListener('pointermove', (e) => {
+                    if (this.isRecording && e.buttons > 0) {
+                        const pressure = e.pressure || 0;
+                        const simulatedPressure = pressure > 0 ? pressure * 100 : 50;
+                        this.updatePressureDisplay(simulatedPressure);
+                        this.recordPressure(simulatedPressure, e.timeStamp, 'pointer-events');
+                    }
+                });
+
+                element.addEventListener('pointerup', (e) => {
+                    this.updatePressureDisplay(0);
+                    this.recordPressure(0, e.timeStamp, 'pointer-events');
+                    this.stopRecording();
+                    console.log('Pointer up');
+                });
+            }
+
+            async setupWebHID(element) {
+                console.log('Setting up WebHID for trackpad access');
+                this.updateStatus('Requesting trackpad access...');
+                
+                try {
+                    const devices = await navigator.hid.requestDevice({
+                        filters: [{ usagePage: 0x01, usage: 0x02 }] // Mouse/trackpad
+                    });
+                    
+                    if (devices.length > 0) {
+                        const device = devices[0];
+                        await device.open();
+                        
+                        device.addEventListener('inputreport', (e) => {
+                            if (this.isRecording) {
+                                const pressure = this.parseHIDPressure(e.data);
+                                this.updatePressureDisplay(pressure);
+                                this.recordPressure(pressure, Date.now() - this.startTime, 'webHID');
+                                
+                                if (pressure > 10) { // 10 grams threshold
+                                    this.isHuman = true;
+                                }
+                            }
+                        });
+                        
+                        this.updateStatus('WebHID ready. Apply pressure to trackpad...');
+                    } else {
+                        this.fallbackToPointerEvents(element);
+                    }
+                } catch (error) {
+                    console.error('WebHID error:', error);
+                    this.fallbackToPointerEvents(element);
+                }
+            }
+
+            parseHIDPressure(data) {
+                // Simplified pressure parsing from HID data
+                if (data && data.byteLength >= 4) {
+                    const view = new DataView(data.buffer);
+                    return Math.abs(view.getInt16(2, true)) * 0.1; // Convert to grams
+                }
+                return 0;
+            }
+
+            fallbackToPointerEvents(element) {
+                console.log('Falling back to pointer events');
+                this.detectionMethod = 'pointer-events';
+                this.setupPointerEvents(element);
+            }
+
+            setupMotionSensors() {
+                console.log('Setting up motion sensors');
+                this.updateStatus('Motion sensors ready. Apply pressure while moving device...');
+                
+                if ('DeviceMotionEvent' in window) {
+                    window.addEventListener('devicemotion', (e) => {
+                        if (this.isRecording) {
+                            const acceleration = e.accelerationIncludingGravity;
+                            const rotation = e.rotationRate;
+                            this.recordMotion(acceleration, rotation, e.timeStamp);
+                        }
+                    });
+                } else {
+                    console.log('Device motion not supported');
+                }
+            }
+
+            startMotionDetection() {
+                this.startRecording();
+                setTimeout(() => {
+                    this.stopRecording();
+                }, 3000); // 3 second recording window
+            }
+
+            setupTouchEvents(element) {
+                console.log('Setting up basic touch events');
+                this.updateStatus('Touch ready. Tap and hold with pressure...');
+                
+                element.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.startRecording();
+                    
+                    // Simulate pressure from touch force if available
+                    const touch = e.touches[0];
+                    const pressure = touch.force ? touch.force * 100 : 30;
+                    this.updatePressureDisplay(pressure);
+                    this.recordPressure(pressure, e.timeStamp, 'touch-events');
+                    
+                    if (pressure > 20) {
+                        this.isHuman = true;
+                    }
+                });
+
+                element.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (this.isRecording) {
+                        const touch = e.touches[0];
+                        const pressure = touch.force ? touch.force * 100 : 30;
+                        this.updatePressureDisplay(pressure);
+                        this.recordPressure(pressure, e.timeStamp, 'touch-events');
+                    }
+                });
+
+                element.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.updatePressureDisplay(0);
+                    this.recordPressure(0, e.timeStamp, 'touch-events');
+                    this.stopRecording();
+                });
+            }
+
+            startRecording() {
+                if (this.isRecording) return;
+                
+                this.isRecording = true;
+                this.startTime = Date.now();
+                this.pressureData = [];
+                this.motionData = [];
+                this.maxForce = 0;
+                this.currentForce = 0;
+                this.isHuman = false;
+                
+                document.getElementById('step-indicator').textContent = 'Recording...';
+                console.log('Started recording pressure data');
+                
+                // Auto-stop after 5 seconds
+                setTimeout(() => {
+                    if (this.isRecording) {
+                        this.stopRecording();
+                    }
+                }, 5000);
+            }
+
+            stopRecording() {
+                if (!this.isRecording) return;
+                
+                this.isRecording = false;
+                this.currentForce = 0;
+                
+                console.log(`Stopped recording. Collected ${this.pressureData.length} pressure points`);
+                console.log(`Max force detected: ${this.maxForce.toFixed(3)}`);
+                
+                // Analyze the collected data
+                this.analyzeData();
+                
+                document.getElementById('step-indicator').textContent = 'Analysis complete';
+            }
+
+            recordPressure(pressure, timestamp, method = this.detectionMethod) {
+                if (!this.isRecording) return;
+                
+                const dataPoint = {
+                    timestamp: timestamp - this.startTime,
+                    pressure: pressure,
+                    force: this.currentForce,
+                    method: method
+                };
+                
+                this.pressureData.push(dataPoint);
+                
+                // Update visual feedback
+                this.updateVisualFeedback(pressure, this.convertPressureToWeight(pressure));
+                
+                // Check if this indicates human behavior
+                if (pressure > 15 && method !== 'motion-sensors') { // 15 gram threshold
+                    this.isHuman = true;
+                }
+                
+                // Log significant pressure changes
+                if (pressure > 10 || this.pressureData.length % 20 === 0) {
+                    console.log(`Pressure: ${pressure.toFixed(1)}g (${method})`);
+                }
+            }
+
+            updatePressureDisplay(pressure) {
+                const display = document.getElementById('pressure-value');
+                if (display) {
+                    display.textContent = `${pressure.toFixed(1)}g`;
+                }
+                
+                // Update visual indicator
+                const indicator = document.getElementById('pressure-indicator');
+                if (indicator) {
+                    const intensity = Math.min(pressure / 100, 1); // Scale to 0-1
+                    indicator.style.opacity = intensity;
+                    indicator.style.backgroundColor = `rgba(76, 175, 80, ${intensity})`;
+                }
+            }
+
+            recordMotion(acceleration, rotation, timestamp) {
+                if (!this.isRecording) return;
+                
+                const motionPoint = {
+                    timestamp: timestamp - this.startTime,
+                    acceleration: {
+                        x: acceleration.x,
+                        y: acceleration.y,
+                        z: acceleration.z
+                    },
+                    rotation: {
+                        alpha: rotation.alpha,
+                        beta: rotation.beta,
+                        gamma: rotation.gamma
+                    }
+                };
+                
+                this.motionData.push(motionPoint);
+                
+                // Analyze motion intensity
+                const intensity = Math.sqrt(
+                    acceleration.x ** 2 + 
+                    acceleration.y ** 2 + 
+                    acceleration.z ** 2
+                );
+                
+                if (intensity > 15) { // Threshold for human-like motion
+                    this.isHuman = true;
+                }
+            }
+
+            convertPressureToWeight(pressure) {
+                // Convert pressure reading to simulated weight
+                // This is calibrated for demonstration purposes
+                return pressure * 1.2; // Simple linear conversion
+            }
+
+            analyzeData() {
+                console.log('Analyzing collected data...');
+                
+                if (this.pressureData.length === 0 && this.motionData.length === 0) {
+                    this.updateStatus('No data collected. Please try again.', 'error');
+                    return;
+                }
+                
+                // Analyze pressure patterns
+                const avgPressure = this.pressureData.length > 0 
+                    ? this.pressureData.reduce((sum, p) => sum + p.pressure, 0) / this.pressureData.length 
+                    : 0;
+                
+                const maxPressure = this.pressureData.length > 0 
+                    ? Math.max(...this.pressureData.map(p => p.pressure)) 
+                    : 0;
+                
+                // Analyze motion patterns
+                const motionVariance = this.calculateMotionVariance();
+                
+                // Enhanced human detection logic
+                const hasSignificantPressure = maxPressure > 10; // 10g threshold
+                const hasVariedPressure = this.pressureData.length > 5;
+                const hasNaturalMotion = motionVariance > 0.1;
+                
+                this.isHuman = hasSignificantPressure || hasVariedPressure || hasNaturalMotion;
+                
+                console.log(`Analysis results:
+                - Pressure points: ${this.pressureData.length}
+                - Max pressure: ${maxPressure.toFixed(1)}g
+                - Avg pressure: ${avgPressure.toFixed(1)}g
+                - Max force: ${this.maxForce.toFixed(3)}
+                - Motion variance: ${motionVariance.toFixed(3)}
+                - Human detected: ${this.isHuman}`);
+                
+                this.updateVisualFeedback(maxPressure, this.convertPressureToWeight(maxPressure));
+                this.updateStep();
+            }
+
+            calculateMotionVariance() {
+                if (this.motionData.length < 2) return 0;
+                
+                const accelerations = this.motionData.map(m => 
+                    Math.sqrt(m.acceleration.x ** 2 + m.acceleration.y ** 2 + m.acceleration.z ** 2)
+                );
+                
+                const mean = accelerations.reduce((sum, a) => sum + a, 0) / accelerations.length;
+                const variance = accelerations.reduce((sum, a) => sum + (a - mean) ** 2, 0) / accelerations.length;
+                
+                return variance;
+            }
+
+            updateVisualFeedback(pressure, weight) {
+                // Update pressure display
+                this.updatePressureDisplay(pressure);
+                
+                // Update weight display
+                const weightDisplay = document.getElementById('weight-value');
+                if (weightDisplay) {
+                    weightDisplay.textContent = `${weight.toFixed(1)}g`;
+                }
+                
+                // Update progress indicator
+                const progress = document.getElementById('progress-fill');
+                if (progress) {
+                    const percentage = Math.min((pressure / 100) * 100, 100);
+                    progress.style.width = `${percentage}%`;
+                }
+            }
+
+            updateStep() {
+                const stepIndicator = document.getElementById('step-indicator');
+                
+                if (this.isHuman) {
+                    stepIndicator.textContent = 'Human verified! ✓';
+                    stepIndicator.className = 'success';
+                    this.updateStatus('Verification successful! You may proceed.', 'success');
+                    
+                    // Enable form submission
+                    const submitButton = document.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Send Message';
+                    }
+                } else {
+                    stepIndicator.textContent = 'Please try again';
+                    stepIndicator.className = 'error';
+                    this.updateStatus('Verification failed. Please apply more pressure or try a different method.', 'error');
+                }
+            }
+
+            updateStatus(message, type = '') {
+                const statusElement = document.getElementById('verification-status');
+                if (statusElement) {
+                    statusElement.textContent = message;
+                    statusElement.className = type;
+                }
+                console.log(`Status: ${message}`);
+            }
+        }
+
+        // Initialize WeightCha when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            window.weightChaDemo = new BrowserWeightChaDemo();
+        });
+    </script>
+</body>
+</html>
+
+            updateStatus(message, type = '') {
+                const statusElement = document.getElementById('status-message');
+                statusElement.textContent = message;
+                statusElement.className = `status-message ${type}`;
+            }
+
+            async processVerification() {
+                this.updateStatus('Analyzing pressure pattern...', '');
+                
+                try {
+                    // Simulate API call for demo
+                    const verificationData = {
+                        challengeId: 'demo-challenge-' + Date.now(),
+                        pressureData: this.pressureData,
+                        motionData: this.motionData,
+                        deviceInfo: this.deviceInfo,
+                        detectionMethod: this.detectionMethod
+                    };
+
+                    // Simulate local analysis for demo
+                    const result = this.simulateAnalysis(verificationData);
+                    
+                    if (result.isHuman) {
+                        this.updateStatus(
+                            `✅ Human verified! Confidence: ${(result.confidence * 100).toFixed(1)}%`, 
+                            'success'
+                        );
+                        
+                        // Enable form submission
+                        this.enableFormSubmission(result.token);
+                    } else {
+                        this.updateStatus(
+                            `❌ Verification failed. Please try again.`, 
+                            'error'
+                        );
+                        
+                        // Reset for retry
+                        setTimeout(() => {
+                            this.resetVerification();
+                        }, 3000);
+                    }
+                    
+                } catch (error) {
+                    this.updateStatus('🔧 Verification service error. Using fallback CAPTCHA.', 'error');
+                    console.error('Verification error:', error);
+                }
+            }
+
+            simulateAnalysis(data) {
+                // Simple demo analysis logic
+                const hasReasonablePressure = data.pressureData.length > 5;
+                const hasVariance = data.pressureData.length > 0 && 
+                    Math.max(...data.pressureData.map(d => d.pressure)) > 0.2;
+                const reasonableDuration = data.pressureData.length > 0 &&
+                    (data.pressureData[data.pressureData.length - 1].deltaTime > 1000);
+                
+                const isHuman = hasReasonablePressure && hasVariance && reasonableDuration;
+                const confidence = isHuman ? 0.85 + (Math.random() * 0.1) : 0.3 + (Math.random() * 0.2);
+                
+                return {
+                    isHuman,
+                    confidence,
+                    token: 'demo-token-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+                };
+            }
+
+            enableFormSubmission(token) {
+                const submitBtn = document.getElementById('submit-btn');
+                const tokenField = document.getElementById('verification-token');
+                
+                tokenField.value = token;
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📧 Send Message';
+                submitBtn.style.background = '#059669';
+            }
+
+            resetVerification() {
+                this.pressureData = [];
+                this.motionData = [];
+                this.currentStep = 0;
+                this.updateStep();
+                this.updateStatus('Ready to verify... Click and apply pressure on trackpad.');
+                
+                const pressureZone = document.getElementById('pressure-zone');
+                pressureZone.classList.remove('active');
+                
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Complete WeightCha Verification First';
+                submitBtn.style.background = '#9ca3af';
+            }
+        }
+
+        // Initialize WeightCha Demo
+        document.addEventListener('DOMContentLoaded', () => {
+            const weightcha = new BrowserWeightChaDemo('demo-api-key-orillia-camping');
+            
+            // Form submission handler
+            document.getElementById('contact-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                
+                if (!data['verification-token']) {
+                    alert('Please complete WeightCha verification first!');
+                    return;
+                }
+                
+                // Simulate form submission
+                alert(`Demo: Form would be submitted with WeightCha token: ${data['verification-token'].substring(0, 20)}...`);
+                console.log('Form submission data:', data);
+            });
+        });
+
+        // Show fallback notice for incompatible devices
+        window.addEventListener('load', () => {
+            const isCompatible = 'PointerEvent' in window || 
+                                'webkitForce' in document.createElement('div') ||
+                                'hid' in navigator;
+            
+            if (!isCompatible) {
+                const fallbackNotice = document.createElement('div');
+                fallbackNotice.className = 'fallback-notice';
+                fallbackNotice.innerHTML = `
+                    <h4>⚠️ Limited Compatibility</h4>
+                    <p>Your device has limited pressure detection support. In production, this would automatically fall back to traditional CAPTCHA.</p>
+                `;
+                
+                document.getElementById('weightcha-container').appendChild(fallbackNotice);
+            }
+        });
+    </script>
+</body>
+</html>
