@@ -23,25 +23,25 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
 
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
+            margin-bottom: 1.5rem;
+            padding: 1rem 0;
         }
 
         .header h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .header p {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.9;
             max-width: 600px;
             margin: 0 auto;
@@ -49,25 +49,26 @@
 
         .demo-card {
             background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
         }
 
         .demo-section {
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
         }
 
         .demo-section h2 {
             color: #4f46e5;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
         }
 
         .contact-form {
             display: grid;
-            gap: 1.5rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
         .form-group {
@@ -75,18 +76,23 @@
             flex-direction: column;
         }
 
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
         .form-group label {
             font-weight: 500;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             color: #374151;
+            font-size: 0.9rem;
         }
 
         .form-group input,
         .form-group textarea {
-            padding: 1rem;
+            padding: 0.7rem;
             border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             transition: border-color 0.3s ease;
             font-family: inherit;
         }
@@ -99,17 +105,18 @@
 
         .form-group textarea {
             resize: vertical;
-            min-height: 120px;
+            min-height: 80px;
         }
 
         .weightcha-section {
             background: #f8fafc;
             border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 2rem;
+            border-radius: 10px;
+            padding: 1rem;
             text-align: center;
-            margin: 1.5rem 0;
+            margin: 1rem 0;
             transition: all 0.3s ease;
+            grid-column: 1 / -1;
         }
 
         .weightcha-section.active {
@@ -120,15 +127,16 @@
         .weightcha-prompt {
             color: #4f46e5;
             font-weight: 500;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .pressure-area {
-            width: 200px;
-            height: 100px;
-            margin: 1rem auto;
+            width: 180px;
+            height: 80px;
+            margin: 0.5rem auto;
             background: linear-gradient(45deg, #4f46e5, #7c3aed);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -137,20 +145,22 @@
             cursor: pointer;
             transition: all 0.3s ease;
             user-select: none;
+            font-size: 0.9rem;
         }
 
         .pressure-area:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
         }
 
         .verification-status {
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 8px;
+            margin-top: 0.5rem;
+            padding: 0.7rem;
+            border-radius: 6px;
             font-weight: 500;
             opacity: 0;
             transition: opacity 0.3s ease;
+            font-size: 0.85rem;
         }
 
         .verification-status.show {
@@ -173,14 +183,17 @@
             background: linear-gradient(45deg, #4f46e5, #7c3aed);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             opacity: 0.5;
             pointer-events: none;
+            grid-column: 1 / -1;
+            justify-self: center;
+            width: 200px;
         }
 
         .submit-btn.enabled {
@@ -190,31 +203,33 @@
 
         .submit-btn:hover.enabled {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
         }
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
         .info-card {
             background: #f8fafc;
-            padding: 2rem;
-            border-radius: 12px;
-            border-left: 4px solid #4f46e5;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #4f46e5;
         }
 
         .info-card h3 {
             color: #4f46e5;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
         }
 
         .info-card p {
             color: #64748b;
-            line-height: 1.6;
+            line-height: 1.4;
+            font-size: 0.85rem;
         }
 
         .github-link {
@@ -223,12 +238,13 @@
             gap: 0.5rem;
             background: #24292e;
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
-            margin-top: 2rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
         }
 
         .github-link:hover {
@@ -242,11 +258,19 @@
             }
             
             .demo-card {
-                padding: 2rem;
+                padding: 1rem;
+            }
+            
+            .contact-form {
+                grid-template-columns: 1fr;
             }
             
             .info-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 5px;
             }
         }
     </style>
@@ -260,7 +284,7 @@
 
         <div class="demo-card">
             <div class="demo-section">
-                <h2>🏕️ Contact Orillia Camping Resort</h2>
+                <h2>📝 Contact Form</h2>
                 <p>Try our contact form protected by WeightCha - just fill out the form and apply gentle pressure to your trackpad to verify you're human.</p>
             </div>
 
@@ -281,18 +305,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="checkin">Check-in Date</label>
-                    <input type="date" id="checkin" name="checkin">
+                    <label for="company">Company</label>
+                    <input type="text" id="company" name="company">
                 </div>
 
-                <div class="form-group">
-                    <label for="guests">Number of Guests</label>
-                    <input type="number" id="guests" name="guests" min="1" max="20">
-                </div>
-
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="message">Message *</label>
-                    <textarea id="message" name="message" placeholder="Tell us about your camping needs, special requests, or any questions you have..." required></textarea>
+                    <textarea id="message" name="message" placeholder="Tell us about your needs or ask any questions..." required></textarea>
                 </div>
 
                 <div class="weightcha-section" id="weightchaSection">
@@ -378,25 +397,26 @@
             pressureArea.style.background = 'linear-gradient(45deg, #10b981, #059669)';
             weightchaSection.classList.add('active');
 
-            // Simulate pressure readings
+            // Simulate pressure readings with more realistic data
             pressureInterval = setInterval(() => {
                 if (isTracking) {
-                    // Simulate natural human pressure variations
-                    const basePressure = 0.5 + Math.random() * 0.3;
-                    const microVariation = (Math.random() - 0.5) * 0.1;
-                    const pressure = Math.max(0, Math.min(1, basePressure + microVariation));
+                    // Generate more realistic human pressure patterns
+                    const timeElapsed = Date.now() - startTime;
+                    const basePressure = Math.min(1.0, 0.3 + (timeElapsed / 2000)); // Gradually increase
+                    const humanNoise = (Math.random() - 0.5) * 0.15; // Natural variation
+                    const pressure = Math.max(0.1, Math.min(1, basePressure + humanNoise));
                     
                     pressureData.push({
                         pressure: pressure,
-                        timestamp: Date.now() - startTime
+                        timestamp: timeElapsed
                     });
 
-                    // Check if we have enough data
-                    if (pressureData.length >= 20) {
+                    // Check if we have enough data (reduced requirement)
+                    if (pressureData.length >= 8) {
                         verifyHuman();
                     }
                 }
-            }, 50);
+            }, 60); // Slightly slower sampling for better patterns
         }
 
         function stopPressureTracking() {
@@ -405,7 +425,7 @@
             isTracking = false;
             clearInterval(pressureInterval);
             
-            if (pressureData.length < 10) {
+            if (pressureData.length < 5) {
                 pressureArea.textContent = 'Hold Longer';
                 pressureArea.style.background = 'linear-gradient(45deg, #ef4444, #dc2626)';
                 setTimeout(() => {
@@ -414,7 +434,7 @@
                         pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
                         weightchaSection.classList.remove('active');
                     }
-                }, 1500);
+                }, 1000);
             }
         }
 
@@ -452,8 +472,8 @@
         }
 
         function analyzeHumanPattern(data) {
-            // Simplified human pattern analysis
-            if (data.length < 10) return { isHuman: false, confidence: 0 };
+            // More lenient human pattern analysis for better MacBook compatibility
+            if (data.length < 5) return { isHuman: false, confidence: 0 };
 
             // Calculate pressure variance (humans have natural micro-variations)
             const pressures = data.map(d => d.pressure);
@@ -469,13 +489,18 @@
             const avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
             const intervalVariance = intervals.reduce((acc, int) => acc + Math.pow(int - avgInterval, 2), 0) / intervals.length;
             
-            // Human patterns have moderate variance and natural timing irregularity
-            const humanlikeVariance = stdDev > 0.02 && stdDev < 0.15;
-            const humanlikeTiming = intervalVariance > 100 && intervalVariance < 2000;
-            const sufficientDuration = data[data.length - 1].timestamp > 800;
+            // More lenient criteria for better user experience
+            const hasVariance = stdDev > 0.01; // Lower threshold
+            const hasTimingVariation = intervalVariance > 50 || data.length > 8; // More lenient timing
+            const sufficientDuration = data[data.length - 1].timestamp > 500; // Shorter required duration
+            const hasMovement = pressures.some(p => p > 0.3); // Check for actual pressure
             
-            const isHuman = humanlikeVariance && humanlikeTiming && sufficientDuration;
-            const confidence = isHuman ? Math.floor(85 + Math.random() * 10) : Math.floor(Math.random() * 30);
+            // More forgiving logic - pass if any criteria are met
+            const isHuman = (hasVariance && sufficientDuration) || 
+                           (hasTimingVariation && hasMovement) || 
+                           (data.length > 10 && sufficientDuration);
+            
+            const confidence = isHuman ? Math.floor(88 + Math.random() * 8) : Math.floor(Math.random() * 40);
             
             return { isHuman, confidence };
         }
