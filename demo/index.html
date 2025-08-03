@@ -319,7 +319,7 @@
                         🤖 Human Verification Required
                     </div>
                     <div class="pressure-area" id="pressureArea">
-                        Click & Hold (MacBook users: press firmly)
+                        Press Here
                     </div>
                     <div class="verification-status" id="verificationStatus"></div>
                 </div>
@@ -430,7 +430,7 @@
                 pressureArea.style.background = 'linear-gradient(45deg, #ef4444, #dc2626)';
                 setTimeout(() => {
                     if (!isVerified) {
-                        pressureArea.textContent = 'Click & Hold (MacBook users: press firmly)';
+                        pressureArea.textContent = 'Press Here';
                         pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
                         weightchaSection.classList.remove('active');
                     }
@@ -450,7 +450,7 @@
                 pressureArea.textContent = '✅ Human Verified';
                 pressureArea.style.background = 'linear-gradient(45deg, #10b981, #059669)';
                 
-                verificationStatus.textContent = `Verification successful! Confidence: ${analysisResult.confidence}%`;
+                verificationStatus.textContent = `Verification successful! Weight: ${analysisResult.weight} gm`;
                 verificationStatus.className = 'verification-status success show';
                 
                 submitBtn.classList.add('enabled');
@@ -463,7 +463,7 @@
                 
                 setTimeout(() => {
                     pressureData = [];
-                    pressureArea.textContent = 'Click & Hold (MacBook users: press firmly)';
+                    pressureArea.textContent = 'Press Here';
                     pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
                     verificationStatus.classList.remove('show');
                     weightchaSection.classList.remove('active');
@@ -495,6 +495,10 @@
             // High confidence for any reasonable attempt
             const confidence = isHuman ? Math.floor(92 + Math.random() * 6) : Math.floor(Math.random() * 30);
             
+            // Calculate simulated weight based on pressure patterns
+            const simulatedWeight = isHuman ? 
+                Math.floor(80 + (avgPressure * 120) + (Math.random() * 40)) : 0; // 80-240 grams range
+            
             console.log('Verification Debug:', {
                 dataLength: data.length,
                 maxPressure: maxPressure.toFixed(3),
@@ -506,10 +510,11 @@
                 hasMinimalRange,
                 hasBasicTiming,
                 isHuman,
-                confidence
+                confidence,
+                simulatedWeight
             });
             
-            return { isHuman, confidence };
+            return { isHuman, confidence, weight: simulatedWeight };
         }
 
         // Form submission
@@ -560,7 +565,7 @@
 
         function resetVerification() {
             isVerified = false;
-            pressureArea.textContent = 'Click & Hold (MacBook users: press firmly)';
+            pressureArea.textContent = 'Press Here';
             pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
             verificationStatus.classList.remove('show');
             submitBtn.classList.remove('enabled');
