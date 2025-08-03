@@ -319,7 +319,7 @@
                         🤖 Human Verification Required
                     </div>
                     <div class="pressure-area" id="pressureArea">
-                        Apply Gentle Pressure
+                        Click & Hold (MacBook users: press firmly)
                     </div>
                     <div class="verification-status" id="verificationStatus"></div>
                 </div>
@@ -430,7 +430,7 @@
                 pressureArea.style.background = 'linear-gradient(45deg, #ef4444, #dc2626)';
                 setTimeout(() => {
                     if (!isVerified) {
-                        pressureArea.textContent = 'Apply Gentle Pressure';
+                        pressureArea.textContent = 'Click & Hold (MacBook users: press firmly)';
                         pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
                         weightchaSection.classList.remove('active');
                     }
@@ -463,7 +463,7 @@
                 
                 setTimeout(() => {
                     pressureData = [];
-                    pressureArea.textContent = 'Apply Gentle Pressure';
+                    pressureArea.textContent = 'Click & Hold (MacBook users: press firmly)';
                     pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
                     verificationStatus.classList.remove('show');
                     weightchaSection.classList.remove('active');
@@ -472,35 +472,42 @@
         }
 
         function analyzeHumanPattern(data) {
-            // More lenient human pattern analysis for better MacBook compatibility
-            if (data.length < 5) return { isHuman: false, confidence: 0 };
+            // Very lenient human pattern analysis optimized for MacBook trackpads
+            if (data.length < 3) return { isHuman: false, confidence: 0 };
 
-            // Calculate pressure variance (humans have natural micro-variations)
+            // Calculate basic metrics
             const pressures = data.map(d => d.pressure);
             const avgPressure = pressures.reduce((a, b) => a + b) / pressures.length;
-            const variance = pressures.reduce((acc, p) => acc + Math.pow(p - avgPressure, 2), 0) / pressures.length;
-            const stdDev = Math.sqrt(variance);
+            const maxPressure = Math.max(...pressures);
+            const minPressure = Math.min(...pressures);
+            const pressureRange = maxPressure - minPressure;
             
-            // Calculate timing irregularity
-            const intervals = [];
-            for (let i = 1; i < data.length; i++) {
-                intervals.push(data[i].timestamp - data[i-1].timestamp);
-            }
-            const avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
-            const intervalVariance = intervals.reduce((acc, int) => acc + Math.pow(int - avgInterval, 2), 0) / intervals.length;
+            // Very simple and forgiving criteria
+            const hasAnyPressure = maxPressure > 0.1; // Very low threshold
+            const hasMinimalDuration = data.length >= 3; // Just need a few data points
+            const hasMinimalRange = pressureRange > 0.05 || avgPressure > 0.2; // Either some variation or decent pressure
+            const lastTimestamp = data[data.length - 1].timestamp;
+            const hasBasicTiming = lastTimestamp > 200; // Very short duration requirement
             
-            // More lenient criteria for better user experience
-            const hasVariance = stdDev > 0.01; // Lower threshold
-            const hasTimingVariation = intervalVariance > 50 || data.length > 8; // More lenient timing
-            const sufficientDuration = data[data.length - 1].timestamp > 500; // Shorter required duration
-            const hasMovement = pressures.some(p => p > 0.3); // Check for actual pressure
+            // Pass if user shows any reasonable interaction
+            const isHuman = hasAnyPressure && hasMinimalDuration && (hasMinimalRange || hasBasicTiming);
             
-            // More forgiving logic - pass if any criteria are met
-            const isHuman = (hasVariance && sufficientDuration) || 
-                           (hasTimingVariation && hasMovement) || 
-                           (data.length > 10 && sufficientDuration);
+            // High confidence for any reasonable attempt
+            const confidence = isHuman ? Math.floor(92 + Math.random() * 6) : Math.floor(Math.random() * 30);
             
-            const confidence = isHuman ? Math.floor(88 + Math.random() * 8) : Math.floor(Math.random() * 40);
+            console.log('Verification Debug:', {
+                dataLength: data.length,
+                maxPressure: maxPressure.toFixed(3),
+                avgPressure: avgPressure.toFixed(3),
+                pressureRange: pressureRange.toFixed(3),
+                duration: lastTimestamp,
+                hasAnyPressure,
+                hasMinimalDuration,
+                hasMinimalRange,
+                hasBasicTiming,
+                isHuman,
+                confidence
+            });
             
             return { isHuman, confidence };
         }
@@ -553,7 +560,7 @@
 
         function resetVerification() {
             isVerified = false;
-            pressureArea.textContent = 'Apply Gentle Pressure';
+            pressureArea.textContent = 'Click & Hold (MacBook users: press firmly)';
             pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
             verificationStatus.classList.remove('show');
             submitBtn.classList.remove('enabled');
