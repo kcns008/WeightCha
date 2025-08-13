@@ -65,58 +65,23 @@
             font-size: 1.3rem;
         }
 
-        .contact-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-group {
+        .verification-container {
             display: flex;
-            flex-direction: column;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            font-weight: 500;
-            margin-bottom: 0.3rem;
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            padding: 0.7rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: border-color 0.3s ease;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #4f46e5;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
         }
 
         .weightcha-section {
             background: #f8fafc;
             border: 2px dashed #cbd5e1;
             border-radius: 10px;
-            padding: 1rem;
+            padding: 2rem;
             text-align: center;
             margin: 1rem 0;
             transition: all 0.3s ease;
-            grid-column: 1 / -1;
+            max-width: 400px;
+            width: 100%;
         }
 
         .weightcha-section.active {
@@ -179,32 +144,6 @@
             border: 1px solid #fecaca;
         }
 
-        .submit-btn {
-            background: linear-gradient(45deg, #4f46e5, #7c3aed);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0.5;
-            pointer-events: none;
-            grid-column: 1 / -1;
-            justify-self: center;
-            width: 200px;
-        }
-
-        .submit-btn.enabled {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .submit-btn:hover.enabled {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
-        }
 
         .info-grid {
             display: grid;
@@ -261,16 +200,23 @@
                 padding: 1rem;
             }
             
-            .contact-form {
-                grid-template-columns: 1fr;
-            }
-            
             .info-grid {
                 grid-template-columns: 1fr;
             }
 
             .container {
                 padding: 5px;
+            }
+
+            .weightcha-section {
+                padding: 1.5rem;
+                margin: 0.5rem 0;
+            }
+
+            .pressure-area {
+                width: 160px;
+                height: 70px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -284,36 +230,11 @@
 
         <div class="demo-card">
             <div class="demo-section">
-                <h2>📝 Contact Form</h2>
-                <p>Try our contact form protected by WeightCha - just fill out the form and apply gentle pressure to your trackpad to verify you're human.</p>
+                <h2>🤖 Human Verification Demo</h2>
+                <p>Experience WeightCha verification on any device - press and hold the button below to verify you're human.</p>
             </div>
 
-            <form class="contact-form" id="contactForm">
-                <div class="form-group">
-                    <label for="name">Full Name *</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone">
-                </div>
-
-                <div class="form-group">
-                    <label for="company">Company</label>
-                    <input type="text" id="company" name="company">
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="message">Message *</label>
-                    <textarea id="message" name="message" placeholder="Tell us about your needs or ask any questions..." required></textarea>
-                </div>
-
+            <div class="verification-container">
                 <div class="weightcha-section" id="weightchaSection">
                     <div class="weightcha-prompt">
                         🤖 Human Verification Required
@@ -323,11 +244,7 @@
                     </div>
                     <div class="verification-status" id="verificationStatus"></div>
                 </div>
-
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    Send Message
-                </button>
-            </form>
+            </div>
         </div>
 
         <div class="demo-card">
@@ -369,9 +286,7 @@
 
         const pressureArea = document.getElementById('pressureArea');
         const verificationStatus = document.getElementById('verificationStatus');
-        const submitBtn = document.getElementById('submitBtn');
         const weightchaSection = document.getElementById('weightchaSection');
-        const contactForm = document.getElementById('contactForm');
 
         // Simulate pressure detection
         let isTracking = false;
@@ -450,13 +365,16 @@
                 pressureArea.textContent = '✅ Human Verified';
                 pressureArea.style.background = 'linear-gradient(45deg, #10b981, #059669)';
                 
-                verificationStatus.textContent = `Verification successful! Weight: ${analysisResult.weight} gm`;
+                verificationStatus.textContent = `✅ Human Verified! Confidence: ${analysisResult.confidence}% | Weight: ${analysisResult.weight}g`;
                 verificationStatus.className = 'verification-status success show';
-                
-                submitBtn.classList.add('enabled');
                 
                 // Store verification token (simulated)
                 sessionStorage.setItem('weightchaToken', 'demo_token_' + Date.now());
+                
+                // Show success message for a few seconds, then reset for another try
+                setTimeout(() => {
+                    resetVerification();
+                }, 5000);
             } else {
                 verificationStatus.textContent = 'Verification failed. Please try again.';
                 verificationStatus.className = 'verification-status error show';
@@ -517,49 +435,13 @@
             return { isHuman, confidence, weight: simulatedWeight };
         }
 
-        // Form submission
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!isVerified) {
-                alert('Please complete human verification first.');
-                return;
-            }
-
-            const formData = new FormData(contactForm);
-            const data = Object.fromEntries(formData.entries());
-            data.weightchaToken = sessionStorage.getItem('weightchaToken');
-
-            try {
-                submitBtn.textContent = 'Sending...';
-                submitBtn.disabled = true;
-
-                const response = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert(`Message sent successfully! ${result.message}`);
-                    contactForm.reset();
-                    
-                    // Reset verification
-                    resetVerification();
-                } else {
-                    alert(`Error: ${result.error}`);
+        // Add a click handler to show verification token when verified
+        pressureArea.addEventListener('click', () => {
+            if (isVerified) {
+                const token = sessionStorage.getItem('weightchaToken');
+                if (token) {
+                    alert(`Verification Token: ${token}\n\nThis token can be used to verify the user completed human verification.`);
                 }
-
-            } catch (error) {
-                console.error('Submission error:', error);
-                alert('Failed to send message. Please try again.');
-            } finally {
-                submitBtn.textContent = 'Send Message';
-                submitBtn.disabled = false;
             }
         });
 
@@ -568,18 +450,9 @@
             pressureArea.textContent = 'Press Here';
             pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
             verificationStatus.classList.remove('show');
-            submitBtn.classList.remove('enabled');
             weightchaSection.classList.remove('active');
             sessionStorage.removeItem('weightchaToken');
         }
-
-        // Prevent form submission without verification
-        submitBtn.addEventListener('click', (e) => {
-            if (!isVerified) {
-                e.preventDefault();
-                alert('Please complete human verification first.');
-            }
-        });
     </script>
 </body>
 </html>

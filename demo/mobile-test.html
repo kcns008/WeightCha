@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeightCha Mobile Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .device-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .verification-area {
+            background: #e7f3ff;
+            border: 2px dashed #4285f4;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .verification-area:active {
+            background: #d4e7ff;
+            transform: scale(0.98);
+        }
+
+        .verification-area.tracking {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .verification-area.success {
+            background: #d1f2dc;
+            border-color: #28a745;
+        }
+
+        .verification-area.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .status.show {
+            opacity: 1;
+        }
+
+        .status.success {
+            background: #d1f2dc;
+            color: #0d5b1f;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .instructions {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .pressure-data {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚀 WeightCha Mobile Test</h1>
+        <p class="instructions">
+            Test WeightCha verification on your device. Press and hold the area below to simulate human interaction.
+        </p>
+
+        <div class="device-info">
+            <strong>Device:</strong> <span id="deviceInfo">Detecting...</span><br>
+            <strong>Touch Support:</strong> <span id="touchSupport">Checking...</span><br>
+            <strong>Force Support:</strong> <span id="forceSupport">Checking...</span>
+        </div>
+
+        <div class="verification-area" id="verificationArea">
+            <div style="font-size: 2rem; margin-bottom: 10px;">🤖</div>
+            <div><strong>Press & Hold Here</strong></div>
+            <div style="font-size: 0.9rem; margin-top: 5px;">Human Verification Required</div>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="pressure-data" id="pressureData" style="display: none;">
+            <strong>Pressure Data:</strong><br>
+            <div id="dataOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        // Device detection
+        const deviceInfo = document.getElementById('deviceInfo');
+        const touchSupport = document.getElementById('touchSupport');
+        const forceSupport = document.getElementById('forceSupport');
+        const verificationArea = document.getElementById('verificationArea');
+        const status = document.getElementById('status');
+        const pressureData = document.getElementById('pressureData');
+        const dataOutput = document.getElementById('dataOutput');
+
+        // Detect device and capabilities
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            const platform = navigator.platform;
+            
+            let device = 'Unknown';
+            if (platform.includes('Mac')) {
+                device = 'macOS Device';
+            } else if (ua.includes('iPhone')) {
+                device = 'iPhone';
+            } else if (ua.includes('iPad')) {
+                device = 'iPad';
+            } else if (ua.includes('Android')) {
+                device = 'Android Device';
+            } else if (platform.includes('Win')) {
+                device = 'Windows Device';
+            } else if (platform.includes('Linux')) {
+                device = 'Linux Device';
+            }
+
+            deviceInfo.textContent = device;
+            
+            // Touch support
+            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            touchSupport.textContent = hasTouch ? '✅ Yes' : '❌ No';
+            
+            // Force touch support (approximate)
+            const hasForce = hasTouch && (ua.includes('iPhone') || ua.includes('iPad') || platform.includes('Mac'));
+            forceSupport.textContent = hasForce ? '✅ Possible' : '❌ No';
+        }
+
+        detectDevice();
+
+        // Verification simulation
+        let isTracking = false;
+        let startTime = 0;
+        let pressureReadings = [];
+        let trackingInterval = null;
+
+        function startVerification(e) {
+            e.preventDefault();
+            if (isTracking) return;
+
+            isTracking = true;
+            startTime = Date.now();
+            pressureReadings = [];
+            
+            verificationArea.className = 'verification-area tracking';
+            verificationArea.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 10px;">⏱️</div>
+                <div><strong>Keep Holding...</strong></div>
+                <div style="font-size: 0.9rem; margin-top: 5px;">Analyzing pattern...</div>
+            `;
+
+            status.classList.remove('show');
+            pressureData.style.display = 'block';
+            dataOutput.innerHTML = '';
+
+            // Simulate pressure readings
+            trackingInterval = setInterval(() => {
+                if (!isTracking) return;
+
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / 3000, 1); // 3 second duration
+
+                // Simulate realistic pressure patterns
+                const basePressure = Math.min(1.0, 0.2 + (elapsed / 2500));
+                const humanVariation = (Math.random() - 0.5) * 0.2;
+                const pressure = Math.max(0.1, Math.min(1, basePressure + humanVariation));
+
+                // Get actual force if available
+                let actualForce = pressure;
+                if (e.touches && e.touches[0] && 'force' in e.touches[0]) {
+                    actualForce = e.touches[0].force || pressure;
+                }
+
+                const reading = {
+                    timestamp: elapsed,
+                    pressure: pressure,
+                    force: actualForce,
+                    progress: progress
+                };
+
+                pressureReadings.push(reading);
+
+                // Update display
+                dataOutput.innerHTML += `${elapsed}ms: pressure=${pressure.toFixed(3)}, force=${actualForce.toFixed(3)}\n`;
+                dataOutput.scrollTop = dataOutput.scrollHeight;
+
+                // Check completion
+                if (progress >= 1 || elapsed >= 3000) {
+                    completeVerification();
+                }
+            }, 50);
+        }
+
+        function stopVerification() {
+            if (!isTracking) return;
+
+            if (trackingInterval) {
+                clearInterval(trackingInterval);
+                trackingInterval = null;
+            }
+
+            if (pressureReadings.length < 10) {
+                // Not enough data
+                verificationArea.className = 'verification-area error';
+                verificationArea.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                    <div><strong>Too Short</strong></div>
+                    <div style="font-size: 0.9rem; margin-top: 5px;">Hold longer next time</div>
+                `;
+                
+                setTimeout(resetVerification, 2000);
+            }
+
+            isTracking = false;
+        }
+
+        function completeVerification() {
+            if (trackingInterval) {
+                clearInterval(trackingInterval);
+                trackingInterval = null;
+            }
+            isTracking = false;
+
+            // Analyze pattern
+            const analysis = analyzePattern(pressureReadings);
+            
+            if (analysis.isHuman) {
+                verificationArea.className = 'verification-area success';
+                verificationArea.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
+                    <div><strong>Human Verified!</strong></div>
+                    <div style="font-size: 0.9rem; margin-top: 5px;">Confidence: ${analysis.confidence}%</div>
+                `;
+
+                status.textContent = `✅ Verification successful! Weight: ${analysis.weight}g | Token: demo_${Date.now()}`;
+                status.className = 'status success show';
+
+                setTimeout(resetVerification, 5000);
+            } else {
+                verificationArea.className = 'verification-area error';
+                verificationArea.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                    <div><strong>Failed</strong></div>
+                    <div style="font-size: 0.9rem; margin-top: 5px;">Please try again</div>
+                `;
+
+                status.textContent = 'Verification failed - pattern not human-like';
+                status.className = 'status error show';
+
+                setTimeout(resetVerification, 3000);
+            }
+        }
+
+        function analyzePattern(data) {
+            if (data.length < 5) return { isHuman: false, confidence: 0, weight: 0 };
+
+            const pressures = data.map(d => d.pressure);
+            const forces = data.map(d => d.force);
+            
+            const avgPressure = pressures.reduce((a, b) => a + b) / pressures.length;
+            const maxPressure = Math.max(...pressures);
+            const minPressure = Math.min(...pressures);
+            const pressureRange = maxPressure - minPressure;
+            
+            // Simple human-like detection
+            const hasVariation = pressureRange > 0.05;
+            const hasGoodDuration = data[data.length - 1].timestamp > 1000;
+            const hasReasonablePressure = maxPressure > 0.2;
+            const hasForceVariation = Math.max(...forces) - Math.min(...forces) > 0.05;
+            
+            const humanScore = [hasVariation, hasGoodDuration, hasReasonablePressure, hasForceVariation]
+                .filter(Boolean).length;
+            
+            const isHuman = humanScore >= 2; // At least 2 out of 4 criteria
+            const confidence = isHuman ? Math.floor(75 + humanScore * 5 + Math.random() * 10) : Math.floor(Math.random() * 40);
+            const weight = isHuman ? Math.floor(50 + (avgPressure * 150) + (Math.random() * 50)) : 0;
+            
+            return { isHuman, confidence, weight };
+        }
+
+        function resetVerification() {
+            verificationArea.className = 'verification-area';
+            verificationArea.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 10px;">🤖</div>
+                <div><strong>Press & Hold Here</strong></div>
+                <div style="font-size: 0.9rem; margin-top: 5px;">Human Verification Required</div>
+            `;
+            status.classList.remove('show');
+            pressureData.style.display = 'none';
+        }
+
+        // Event listeners for all device types
+        verificationArea.addEventListener('mousedown', startVerification);
+        verificationArea.addEventListener('mouseup', stopVerification);
+        verificationArea.addEventListener('mouseleave', stopVerification);
+        verificationArea.addEventListener('touchstart', startVerification);
+        verificationArea.addEventListener('touchend', stopVerification);
+        verificationArea.addEventListener('touchcancel', stopVerification);
+
+        // Prevent context menu and text selection
+        verificationArea.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>
