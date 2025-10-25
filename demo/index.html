@@ -171,6 +171,59 @@
             font-size: 0.85rem;
         }
 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .token-section {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        #copyToken:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        #copyToken:active {
+            transform: translateY(0);
+        }
+
         .github-link {
             display: inline-flex;
             align-items: center;
@@ -195,13 +248,26 @@
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             .demo-card {
                 padding: 1rem;
             }
-            
+
             .info-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .stat-number {
+                font-size: 1.4rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
             }
 
             .container {
@@ -217,6 +283,15 @@
                 width: 160px;
                 height: 70px;
                 font-size: 0.8rem;
+            }
+
+            .token-section div {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #copyToken {
+                width: 100%;
             }
         }
     </style>
@@ -243,6 +318,44 @@
                         Press Here
                     </div>
                     <div class="verification-status" id="verificationStatus"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <div class="demo-section">
+                <h2>📊 Verification Statistics</h2>
+                <p>Track your verification performance and see how WeightCha works in real-time.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAttempts">0</div>
+                    <div class="stat-label">Total Attempts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successfulVerifications">0</div>
+                    <div class="stat-label">Successful</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successRate">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgTime">0ms</div>
+                    <div class="stat-label">Avg Time</div>
+                </div>
+            </div>
+
+            <div class="token-section" id="tokenSection" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+                    <div style="flex: 1;">
+                        <strong>Last Verification Token:</strong>
+                        <code id="tokenDisplay" style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.85rem;"></code>
+                    </div>
+                    <button id="copyToken" style="background: #4f46e5; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">
+                        📋 Copy
+                    </button>
                 </div>
             </div>
         </div>
@@ -284,6 +397,51 @@
         let pressureData = [];
         let startTime = null;
 
+        // Statistics tracking
+        let stats = {
+            totalAttempts: 0,
+            successfulVerifications: 0,
+            verificationTimes: [],
+            lastToken: null
+        };
+
+        // Load stats from localStorage
+        function loadStats() {
+            const savedStats = localStorage.getItem('weightchaStats');
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+                updateStatsDisplay();
+            }
+        }
+
+        // Save stats to localStorage
+        function saveStats() {
+            localStorage.setItem('weightchaStats', JSON.stringify(stats));
+        }
+
+        // Update statistics display
+        function updateStatsDisplay() {
+            document.getElementById('totalAttempts').textContent = stats.totalAttempts;
+            document.getElementById('successfulVerifications').textContent = stats.successfulVerifications;
+
+            const successRate = stats.totalAttempts > 0 ?
+                Math.round((stats.successfulVerifications / stats.totalAttempts) * 100) : 0;
+            document.getElementById('successRate').textContent = successRate + '%';
+
+            const avgTime = stats.verificationTimes.length > 0 ?
+                Math.round(stats.verificationTimes.reduce((a, b) => a + b, 0) / stats.verificationTimes.length) : 0;
+            document.getElementById('avgTime').textContent = avgTime + 'ms';
+
+            // Show token section if we have a last token
+            if (stats.lastToken) {
+                document.getElementById('tokenSection').style.display = 'block';
+                document.getElementById('tokenDisplay').textContent = stats.lastToken;
+            }
+        }
+
+        // Initialize stats on page load
+        loadStats();
+
         const pressureArea = document.getElementById('pressureArea');
         const verificationStatus = document.getElementById('verificationStatus');
         const weightchaSection = document.getElementById('weightchaSection');
@@ -303,6 +461,11 @@
         function startPressureTracking(e) {
             e.preventDefault();
             if (isVerified) return;
+
+            // Track attempt start
+            stats.totalAttempts++;
+            saveStats();
+            updateStatsDisplay();
 
             isTracking = true;
             startTime = Date.now();
@@ -357,20 +520,34 @@
             clearInterval(pressureInterval);
             isTracking = false;
 
+            // Calculate verification time
+            const verificationTime = Date.now() - startTime;
+
             // Simulate WeightCha analysis
             const analysisResult = analyzeHumanPattern(pressureData);
-            
+
             if (analysisResult.isHuman) {
+                // Track successful verification
+                stats.successfulVerifications++;
+                stats.verificationTimes.push(verificationTime);
+
+                // Generate and store token
+                const token = 'demo_token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                stats.lastToken = token;
+
+                saveStats();
+                updateStatsDisplay();
+
                 isVerified = true;
                 pressureArea.textContent = '✅ Human Verified';
                 pressureArea.style.background = 'linear-gradient(45deg, #10b981, #059669)';
-                
+
                 verificationStatus.textContent = `✅ Human Verified! Confidence: ${analysisResult.confidence}% | Weight: ${analysisResult.weight}g`;
                 verificationStatus.className = 'verification-status success show';
-                
+
                 // Store verification token (simulated)
-                sessionStorage.setItem('weightchaToken', 'demo_token_' + Date.now());
-                
+                sessionStorage.setItem('weightchaToken', token);
+
                 // Show success message for a few seconds, then reset for another try
                 setTimeout(() => {
                     resetVerification();
@@ -435,6 +612,41 @@
             return { isHuman, confidence, weight: simulatedWeight };
         }
 
+        // Add copy token functionality
+        document.getElementById('copyToken').addEventListener('click', () => {
+            if (stats.lastToken) {
+                navigator.clipboard.writeText(stats.lastToken).then(() => {
+                    const copyBtn = document.getElementById('copyToken');
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '✅ Copied!';
+                    copyBtn.style.background = '#10b981';
+
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                        copyBtn.style.background = '#4f46e5';
+                    }, 2000);
+                }).catch(err => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = stats.lastToken;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+
+                    const copyBtn = document.getElementById('copyToken');
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '✅ Copied!';
+                    copyBtn.style.background = '#10b981';
+
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                        copyBtn.style.background = '#4f46e5';
+                    }, 2000);
+                });
+            }
+        });
+
         // Add a click handler to show verification token when verified
         pressureArea.addEventListener('click', () => {
             if (isVerified) {
@@ -451,8 +663,36 @@
             pressureArea.style.background = 'linear-gradient(45deg, #4f46e5, #7c3aed)';
             verificationStatus.classList.remove('show');
             weightchaSection.classList.remove('active');
-            sessionStorage.removeItem('weightchaToken');
         }
+
+        // Add reset stats button functionality
+        function addResetStatsButton() {
+            const resetBtn = document.createElement('button');
+            resetBtn.textContent = '🔄 Reset Stats';
+            resetBtn.style.cssText = 'background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; margin-left: 10px;';
+            resetBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to reset all statistics?')) {
+                    stats = {
+                        totalAttempts: 0,
+                        successfulVerifications: 0,
+                        verificationTimes: [],
+                        lastToken: null
+                    };
+                    saveStats();
+                    updateStatsDisplay();
+                    document.getElementById('tokenSection').style.display = 'none';
+                }
+            });
+
+            // Insert the button next to the copy button
+            const tokenSection = document.querySelector('.token-section div');
+            if (tokenSection) {
+                tokenSection.appendChild(resetBtn);
+            }
+        }
+
+        // Initialize reset button
+        addResetStatsButton();
     </script>
 </body>
 </html>
